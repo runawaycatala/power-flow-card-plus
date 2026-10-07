@@ -419,7 +419,7 @@ export const styles = css`
     color: var(--text-individual-right-mid-color, var(--individual-right-mid-color, #ff9800));
   }
   circle.individual-mid {
-    stroke-width: 4;
+    stroke-width: 1;
     fill: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
     stroke: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
   }

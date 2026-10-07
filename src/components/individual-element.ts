@@ -16,6 +16,7 @@ interface IndividualRenderProps {
   individualObj?: IndividualObject;
   position: IndividualPosition;
   colIndex?: number;
+  numRightCols?: number;
   newDur: NewDur;
   templatesObj: TemplatesObj;
   battery?: any;
@@ -25,7 +26,7 @@ interface IndividualRenderProps {
 export const renderIndividualElement = (
   main: PowerFlowCardPlus,
   config: PowerFlowCardPlusConfig,
-  { individualObj, position, colIndex = 0, newDur, templatesObj, hasBottomRow = false }: IndividualRenderProps
+  { individualObj, position, colIndex = 0, numRightCols = 1, newDur, templatesObj, hasBottomRow = false }: IndividualRenderProps
 ): TemplateResult => {
   if (!individualObj) return html`<div class="spacer"></div>`;
 
@@ -194,15 +195,18 @@ export const renderIndividualElement = (
     }
 
     if (position === "right-top") {
-      const extraLeft = colIndex * 80;
+      const isMultiCol = numRightCols > 1;
       const pathId = `individual-top-right-home-${colIndex}`;
+      const pathD = isMultiCol && colIndex === 0
+        ? "M90,0 v15 c0,30 -20,30 -40,30 H0"
+        : `M${hasBottomRow ? 45 : 47},0 v15 c0,${hasBottomRow ? "30 -10,30 -30,30" : "35 -10,35 -30,35"} h-20`;
       return html`
         <div class="right-individual-flow-container col-${colIndex}">
-          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" class="right-individual-flow">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" class="right-individual-flow">
             <path
               id="${pathId}"
               class="${styleLine(individualObj.state || 0, config)}"
-              d="M${hasBottomRow ? 45 : 47},0 v15 c0,${hasBottomRow ? "30 -10,30 -30,30" : "35 -10,35 -30,35"} h-${20 + extraLeft}"
+              d="${pathD}"
               vector-effect="non-scaling-stroke"
             />
             ${checkShouldShowDots(config) && individualObj.state && individualObj.state >= (individualObj.displayZeroTolerance ?? 0)
@@ -214,7 +218,7 @@ export const renderIndividualElement = (
                     keyPoints="${individualObj.invertAnimation ? "0;1" : "1;0"}"
                     keyTimes="0;1"
                   >
-                    <mpath href="#${pathId}" xlink:href="#${pathId}" />
+                    <mpath xlink:href="#${pathId}" href="#${pathId}" />
                   </animateMotion>
                 </circle>`
               : nothing}
@@ -224,15 +228,18 @@ export const renderIndividualElement = (
     }
 
     if (position === "right-bottom") {
-      const extraLeft = colIndex * 80;
+      const isMultiCol = numRightCols > 1;
       const pathId = `individual-bottom-right-home-${colIndex}`;
+      const pathD = isMultiCol && colIndex === 0
+        ? "M90,100 v-15 c0,-30 -20,-30 -40,-30 H0"
+        : "M45,100 v-15 c0,-30 -10,-30 -30,-30 h-20";
       return html`
         <div class="right-individual-flow-container col-${colIndex}">
-          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" class="right-individual-flow">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" class="right-individual-flow">
             <path
               id="${pathId}"
               class="${styleLine(individualObj.state || 0, config)}"
-              d="M45,100 v-15 c0,-30 -10,-30 -30,-30 h-${20 + extraLeft}"
+              d="${pathD}"
               vector-effect="non-scaling-stroke"
             />
             ${checkShouldShowDots(config) && individualObj.state && individualObj.state >= (individualObj.displayZeroTolerance ?? 0)
@@ -244,7 +251,7 @@ export const renderIndividualElement = (
                     keyPoints="${individualObj.invertAnimation ? "0;1" : "1;0"}"
                     keyTimes="0;1"
                   >
-                    <mpath href="#${pathId}" xlink:href="#${pathId}" />
+                    <mpath xlink:href="#${pathId}" href="#${pathId}" />
                   </animateMotion>
                 </circle>`
               : nothing}
@@ -261,19 +268,19 @@ export const renderIndividualElement = (
             <path
               id="${pathId}"
               class="${styleLine(individualObj.state || 0, config)}"
-              d="M0,50 H100"
+              d="M0,50 H95"
               vector-effect="non-scaling-stroke"
             />
             ${checkShouldShowDots(config) && individualObj.state && individualObj.state >= (individualObj.displayZeroTolerance ?? 0)
-              ? svg`<circle r="1.75" class="individual-mid" vector-effect="non-scaling-stroke">
+              ? svg`<circle r="2" class="individual-mid" vector-effect="non-scaling-stroke">
                   <animateMotion
                     dur="${computeIndividualFlowRate(individualObj?.field?.calculate_flow_rate, duration)}s"
                     repeatCount="indefinite"
-                    calcMode="${individualObj.invertAnimation ? "linear" : "paced"}"
-                    keyPoints="${individualObj.invertAnimation ? "1;0" : nothing}"
-                    keyTimes="${individualObj.invertAnimation ? "0;1" : nothing}"
+                    calcMode="paced"
+                    keyPoints="${individualObj.invertAnimation ? "1;0" : "0;1"}"
+                    keyTimes="0;1"
                   >
-                    <mpath href="#${pathId}" xlink:href="#${pathId}" />
+                    <mpath xlink:href="#${pathId}" href="#${pathId}" />
                   </animateMotion>
                 </circle>`
               : nothing}
