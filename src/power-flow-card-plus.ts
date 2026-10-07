@@ -297,6 +297,14 @@ export class PowerFlowCardPlus extends LitElement {
     } = data;
 
     const totalCols = 3 + (rightColumns.length || 1);
+    const circleSizes: Record<number, number> = {
+      4: 80,
+      5: 62,
+      6: 52,
+      7: 44,
+      8: 38,
+    };
+    const circleSize = circleSizes[totalCols] || (totalCols > 8 ? 36 : 80);
     return html`
       <ha-card
         .header=${this._config.title}
@@ -306,7 +314,7 @@ export class PowerFlowCardPlus extends LitElement {
         <div
           class="card-content ${this._config.full_size ? "full-size" : ""} ${this._config.no_labels ? "no-labels" : ""} has-right-cols right-cols-${rightColumns.length}"
           id="power-flow-card-plus"
-          style="--total-cols: ${totalCols}; ${this._config.style_card_content ? this._config.style_card_content : ""}"
+          style="--total-cols: ${totalCols}; --size-circle-entity: ${circleSize}px; ${this._config.style_card_content ? this._config.style_card_content : ""}"
         >
           ${solar.has || individualObjs?.some((individual) => individual?.has) || nonFossil.hasPercentage
             ? html`<div class="row">

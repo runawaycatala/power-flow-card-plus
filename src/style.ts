@@ -377,11 +377,6 @@ export const styles = css`
     position: relative;
   }
 
-  .card-content.has-right-cols {
-    --total-cols: 4;
-    --size-circle-entity: min(80px, calc((100% - 16px) / var(--total-cols) - 4px));
-  }
-
   .card-content.has-right-cols .row {
     display: grid;
     grid-template-columns: repeat(var(--total-cols, 4), 1fr);
@@ -400,6 +395,9 @@ export const styles = css`
   .card-content.has-right-cols .circle {
     width: var(--size-circle-entity, 80px);
     height: var(--size-circle-entity, 80px);
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    flex-shrink: 0;
     font-size: min(12px, calc(var(--size-circle-entity) * 0.18));
   }
 
