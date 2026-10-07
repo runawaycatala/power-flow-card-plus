@@ -196,12 +196,14 @@ export const renderIndividualElement = (
 
     if (position === "right-top") {
       const isMultiCol = numRightCols > 1;
+      const colWidthPercent = isMultiCol ? ((colIndex + 1) / numRightCols) * 100 : null;
+      const containerStyle = colWidthPercent ? `width: ${colWidthPercent}%;` : "";
       const pathId = `individual-top-right-home-${colIndex}`;
-      const pathD = isMultiCol && colIndex === 0
+      const pathD = isMultiCol
         ? "M90,0 v15 c0,30 -20,30 -40,30 H0"
         : `M${hasBottomRow ? 45 : 47},0 v15 c0,${hasBottomRow ? "30 -10,30 -30,30" : "35 -10,35 -30,35"} h-20`;
       return html`
-        <div class="right-individual-flow-container col-${colIndex}">
+        <div class="right-individual-flow-container col-${colIndex}" style="${containerStyle}">
           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" class="right-individual-flow">
             <path
               id="${pathId}"
@@ -229,12 +231,14 @@ export const renderIndividualElement = (
 
     if (position === "right-bottom") {
       const isMultiCol = numRightCols > 1;
+      const colWidthPercent = isMultiCol ? ((colIndex + 1) / numRightCols) * 100 : null;
+      const containerStyle = colWidthPercent ? `width: ${colWidthPercent}%;` : "";
       const pathId = `individual-bottom-right-home-${colIndex}`;
-      const pathD = isMultiCol && colIndex === 0
+      const pathD = isMultiCol
         ? "M90,100 v-15 c0,-30 -20,-30 -40,-30 H0"
         : "M45,100 v-15 c0,-30 -10,-30 -30,-30 h-20";
       return html`
-        <div class="right-individual-flow-container col-${colIndex}">
+        <div class="right-individual-flow-container col-${colIndex}" style="${containerStyle}">
           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" class="right-individual-flow">
             <path
               id="${pathId}"
@@ -261,9 +265,12 @@ export const renderIndividualElement = (
     }
 
     if (position === "right-mid") {
+      const isMultiCol = numRightCols > 1;
+      const colWidthPercent = isMultiCol ? ((colIndex + 1) / numRightCols) * 100 : null;
+      const containerStyle = colWidthPercent ? `width: ${colWidthPercent}%;` : "";
       const pathId = `individual-mid-right-home-${colIndex}`;
       return html`
-        <div class="right-individual-flow-container col-${colIndex}">
+        <div class="right-individual-flow-container col-${colIndex}" style="${containerStyle}">
           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" class="right-individual-flow">
             <path
               id="${pathId}"

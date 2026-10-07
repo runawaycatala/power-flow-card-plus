@@ -377,7 +377,10 @@ export const styles = css`
     position: relative;
   }
 
-  .right-cols-2 .right-individual-flow-container {
+  .right-cols-2 .right-individual-flow-container,
+  .right-cols-3 .right-individual-flow-container,
+  .right-cols-4 .right-individual-flow-container,
+  .right-cols-5 .right-individual-flow-container {
     left: 50%;
     right: auto;
     width: 50%;
@@ -386,12 +389,11 @@ export const styles = css`
     padding: 0;
     margin: 0;
   }
-  .right-cols-2 .right-individual-flow-container.col-0 .right-individual-flow {
-    width: 50%;
-    max-width: none;
-  }
-  .right-cols-2 .right-individual-flow-container.col-1 .right-individual-flow {
-    width: calc(100% - var(--size-circle-entity) / 2 - 15px);
+  .right-cols-2 .right-individual-flow-container .right-individual-flow,
+  .right-cols-3 .right-individual-flow-container .right-individual-flow,
+  .right-cols-4 .right-individual-flow-container .right-individual-flow,
+  .right-cols-5 .right-individual-flow-container .right-individual-flow {
+    width: 100%;
     max-width: none;
   }
 
