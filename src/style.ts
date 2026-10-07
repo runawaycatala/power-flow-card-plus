@@ -90,7 +90,7 @@ export const styles = css`
     text-decoration: none;
     color: var(--primary-text-color);
     gap: 2px;
-    // background-color: var(--card-background-color); /* hide overflowing lines behind background */
+    background-color: var(--card-background-color, var(--ha-card-background, white)); /* hide overflowing lines behind background */
     overflow: hidden;
   }
 
@@ -326,7 +326,10 @@ export const styles = css`
     fill: var(--individual-right-top-color);
   }
 
-  .individual-right-top path,
+  .individual-right-top path {
+    stroke: var(--individual-right-top-color);
+    fill: none;
+  }
   .individual-right-top circle {
     stroke: var(--individual-right-top-color);
     fill: var(--individual-right-top-color);
@@ -339,7 +342,10 @@ export const styles = css`
     fill: var(--individual-right-bottom-color);
   }
 
-  .individual-right-bottom path,
+  .individual-right-bottom path {
+    stroke: var(--individual-right-bottom-color);
+    fill: none;
+  }
   .individual-right-bottom circle {
     stroke: var(--individual-right-bottom-color);
     fill: var(--individual-right-bottom-color);
@@ -379,7 +385,10 @@ export const styles = css`
   .individual-right-mid .circle {
     border-color: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
   }
-  .individual-right-mid path,
+  .individual-right-mid path {
+    stroke: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
+    fill: none;
+  }
   .individual-right-mid circle {
     stroke: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
     fill: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
