@@ -226,15 +226,41 @@ export const allDynamicStyles = (
   }
 
   if (individual?.some((ind) => ind.has)) {
-    const getStylesForIndividual = (field: IndividualDeviceType, index: number) => {
-      const colors = ["#d0cc5b", "#964cb5", "#b54c9d", "#5bd0cc"];
-      const fieldNames: string[] = ["left-top", "left-bottom", "right-top", "right-bottom"];
+    const colors = [
+      "#d0cc5b", // 0: left-top
+      "#964cb5", // 1: left-bottom
+      "#b54c9d", // 2: right-top-1
+      "#5bd0cc", // 3: right-bottom-1
+      "#ff9800", // 4: right-mid-1 / right-top-2
+      "#e91e63", // 5: right-bottom-2
+      "#00bcd4", // 6: right-top-3 / right-mid-2
+      "#4caf50", // 7: right-bottom-3
+      "#9c27b0", // 8: right-top-4 / right-mid-3
+      "#ff5722", // 9: right-bottom-4
+    ];
+    const fieldNames: string[] = [
+      "left-top",
+      "left-bottom",
+      "right-top",
+      "right-bottom",
+      "right-mid",
+      "right-top-2",
+      "right-bottom-2",
+      "right-mid-2",
+      "right-top-3",
+      "right-bottom-3",
+    ];
 
-      const fieldName = fieldNames?.[index] || "left-top";
+    const getStylesForIndividual = (indObj: IndividualObject, index: number) => {
+      const field = indObj.field;
+      const fieldName = fieldNames?.[index] || `item-${index}`;
 
-      let individualColor = field?.color;
+      let individualColor = field?.color || indObj.color;
       if (typeof individualColor === "object") individualColor = convertColorListToHex(individualColor);
-      main.style.setProperty(`--individual-${fieldName}-color`, individualColor || colors[index] || "#d0cc5b");
+      const chosenColor = individualColor || colors[index % colors.length] || "#d0cc5b";
+
+      main.style.setProperty(`--individual-${fieldName}-color`, chosenColor);
+      main.style.setProperty(`--individual-${index}-color`, chosenColor);
 
       main.style.setProperty(
         `--icon-individual-${fieldName}-color`,
@@ -248,10 +274,20 @@ export const allDynamicStyles = (
         `--secondary-text-individual-${fieldName}-color`,
         field?.secondary_info?.color_value ? `var(--individual-${fieldName}-color)` : `var(--primary-text-color)`
       );
+
+      // Handle children colors if present
+      if (indObj.children && indObj.children.length > 0) {
+        indObj.children.forEach((child, cIdx) => {
+          let childColor = child.field?.color || child.color;
+          if (typeof childColor === "object") childColor = convertColorListToHex(childColor);
+          const finalChildColor = childColor || chosenColor;
+          main.style.setProperty(`--individual-${index}-child-${cIdx}-color`, finalChildColor);
+        });
+      }
     };
     const individualsShown = individual.filter((i) => i?.has);
-    for (let index = 0; index < (individualsShown.length < 4 ? individualsShown.length : 4); index++) {
-      getStylesForIndividual(individualsShown[index].field as IndividualDeviceType, index);
+    for (let index = 0; index < (individualsShown.length < 10 ? individualsShown.length : 10); index++) {
+      getStylesForIndividual(individualsShown[index], index);
     }
   }
 };

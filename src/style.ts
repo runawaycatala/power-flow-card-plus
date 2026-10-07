@@ -109,7 +109,7 @@ export const styles = css`
 
   .card-content,
   .row {
-    max-width: 470px;
+    max-width: var(--pfcp-card-max-width, 500px);
   }
   .lines {
     position: absolute;
@@ -177,7 +177,7 @@ export const styles = css`
   .row {
     display: flex;
     justify-content: space-between;
-    max-width: 500px;
+    max-width: var(--pfcp-card-max-width, 500px);
     margin: 0 auto;
   }
   .circle-container {
@@ -367,6 +367,123 @@ export const styles = css`
     top: var(--lines-svg-not-flat-line-top);
     max-width: 340px;
     position: relative;
+  }
+  .right-individual-flow-container.mid {
+    bottom: unset;
+    top: calc(50% - 10px);
+    height: 20px;
+  }
+  .right-individual-flow.mid {
+    height: 20px;
+    top: 0;
+  }
+  .individual-right-mid .circle {
+    border-color: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
+  }
+  .individual-right-mid path,
+  .individual-right-mid circle {
+    stroke: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
+  }
+  circle.individual-mid {
+    stroke-width: 4;
+    fill: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
+  }
+
+  /* Branch & Children styling */
+  .individual-branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  .individual-branch.branch-top {
+    justify-content: flex-end;
+  }
+  .individual-branch.branch-bottom {
+    justify-content: flex-start;
+  }
+  .individual-children {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    z-index: 3;
+  }
+  .children-circles-row {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+  }
+  .child-circle-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .child-circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    box-sizing: border-box;
+    border: 2px solid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 9px;
+    line-height: 10px;
+    position: relative;
+    cursor: pointer;
+    background: var(--card-background-color, #fff);
+    overflow: hidden;
+    gap: 1px;
+  }
+  .child-circle > ha-ripple {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .child-circle > :not(ha-ripple) {
+    position: relative;
+    z-index: 1;
+  }
+  .child-icon {
+    --mdc-icon-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+  .child-label {
+    font-size: 10px;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 1px 0;
+  }
+  .child-state {
+    font-size: 9px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .children-lines-container {
+    width: 100%;
+    height: 24px;
+    position: relative;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .children-flow-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    display: block;
   }
   .circle-container.low-carbon {
     height: 130px;

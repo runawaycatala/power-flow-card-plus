@@ -11,24 +11,66 @@ const getIndividualObjSortPowerMode = (individualObjs: IndividualObject[], index
   return filteredIndividualObjs?.[index] ?? undefined;
 };
 
+export interface RightColumn {
+  top?: IndividualObject;
+  mid?: IndividualObject;
+  bottom?: IndividualObject;
+}
+
+export const getRightColumns = (individualObjs: IndividualObject[]): RightColumn[] => {
+  const items = individualObjs.filter((i) => i?.has);
+  const rightItems = items.slice(2);
+  const columns: RightColumn[] = [];
+
+  let i = 0;
+  while (i < rightItems.length) {
+    const remaining = rightItems.length - i;
+    if (remaining === 1) {
+      if (columns.length > 0) {
+        columns[columns.length - 1].mid = rightItems[i];
+      } else {
+        columns.push({ top: rightItems[i] });
+      }
+      i++;
+    } else {
+      columns.push({
+        top: rightItems[i],
+        bottom: rightItems[i + 1],
+      });
+      i += 2;
+    }
+  }
+
+  return columns;
+};
+
 export const getTopLeftIndividual = (individualObjs: IndividualObject[]): IndividualObject | undefined => {
-  return getIndividualObjSortPowerMode(individualObjs, 0);
+  const items = individualObjs.filter((i) => i?.has);
+  return items[0];
 };
 
 export const getBottomLeftIndividual = (individualObjs: IndividualObject[]): IndividualObject | undefined => {
-  return getIndividualObjSortPowerMode(individualObjs, 1);
+  const items = individualObjs.filter((i) => i?.has);
+  return items[1];
 };
 
 export const getTopRightIndividual = (individualObjs: IndividualObject[]): IndividualObject | undefined => {
-  return getIndividualObjSortPowerMode(individualObjs, 2);
+  return getRightColumns(individualObjs)[0]?.top;
 };
 
 export const getBottomRightIndividual = (individualObjs: IndividualObject[]): IndividualObject | undefined => {
-  return getIndividualObjSortPowerMode(individualObjs, 3);
+  return getRightColumns(individualObjs)[0]?.bottom;
+};
+
+export const getMidRightIndividual = (individualObjs: IndividualObject[]): IndividualObject | undefined => {
+  return getRightColumns(individualObjs)[0]?.mid;
 };
 
 export const checkHasRightIndividual = (individualObjs: IndividualObject[]): boolean =>
-  !!getTopRightIndividual(individualObjs) || !!getBottomRightIndividual(individualObjs);
+  getRightColumns(individualObjs).length > 0;
 
 export const checkHasBottomIndividual = (individualObjs: IndividualObject[]): boolean =>
-  !!getBottomLeftIndividual(individualObjs) || !!getBottomRightIndividual(individualObjs);
+  !!getBottomLeftIndividual(individualObjs) || getRightColumns(individualObjs).some((c) => !!c.bottom);
+
+export const checkHasMiddleIndividual = (individualObjs: IndividualObject[]): boolean =>
+  getRightColumns(individualObjs).some((c) => !!c.mid);

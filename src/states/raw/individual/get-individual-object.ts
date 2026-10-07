@@ -60,20 +60,30 @@ export type IndividualObject = {
     displayZero: boolean;
     accept_negative: boolean;
     displayZeroTolerance: number;
-    decimals: number | null;
     tap_action?: ActionConfig;
     hold_action?: ActionConfig;
     double_tap_action?: ActionConfig;
   };
+  children?: IndividualObject[];
 };
 
 export const getIndividualObject = (hass: HomeAssistant, field: IndividualDeviceType | undefined): IndividualObject => {
-  if (!field || !field?.entity) return fallbackIndividualObject;
-  const entity = field.entity;
-  const state = getIndividualState(hass, field);
+  if (!field) return fallbackIndividualObject;
+  if (!field.entity && (!field.children || field.children.length === 0)) return fallbackIndividualObject;
+
+  const childrenObjs: IndividualObject[] = field.children && field.children.length > 0
+    ? field.children.map((child) => getIndividualObject(hass, child))
+    : [];
+
+  const entity = field.entity || field.name || "individual_group";
+  let state = field.entity ? getIndividualState(hass, field) : null;
+  if (childrenObjs.length > 0) {
+    state = childrenObjs.reduce((acc, c) => acc + (c.state || 0), 0);
+  }
+
   const displayZero = field?.display_zero || false;
   const displayZeroTolerance = field?.display_zero_tolerance || 0;
-  const has = hasIndividualObject(displayZero, state, displayZeroTolerance);
+  const has = hasIndividualObject(displayZero, state, displayZeroTolerance) || childrenObjs.some((c) => c.has);
   const isStateNegative = state && state < 0;
   const userConfiguredInvertAnimation = field?.inverted_animation || false;
   const invertAnimation = isStateNegative ? !userConfiguredInvertAnimation : userConfiguredInvertAnimation;
@@ -89,6 +99,7 @@ export const getIndividualObject = (hass: HomeAssistant, field: IndividualDevice
     field,
     entity,
     has,
+    children: childrenObjs,
     state,
     displayZero,
     displayZeroTolerance,

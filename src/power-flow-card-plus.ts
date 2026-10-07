@@ -6,10 +6,7 @@ import { batteryElement } from "@/components/battery";
 import { flowElement } from "@/components/flows";
 import { gridElement } from "@/components/grid";
 import { homeElement } from "@/components/home";
-import { individualLeftBottomElement } from "@/components/individual-left-bottom-element";
-import { individualLeftTopElement } from "@/components/individual-left-top-element";
-import { individualRightBottomElement } from "@/components/individual-right-bottom-element";
-import { individualRightTopElement } from "@/components/individual-right-top-element";
+import { renderIndividualElement } from "@/components/individual-element";
 import { dashboardLinkElement } from "@/components/misc/dashboard-link";
 import { nonFossilElement } from "@/components/non-fossil";
 import { solarElement } from "@/components/solar";
@@ -39,6 +36,8 @@ import {
   getBottomRightIndividual,
   getTopLeftIndividual,
   getTopRightIndividual,
+  getRightColumns,
+  RightColumn,
 } from "@/utils/compute-individual-position";
 import { displayValue } from "@/utils/display-value";
 import { defaultValues, getDefaultConfig } from "@/utils/get-default-config";
@@ -97,8 +96,8 @@ export class PowerFlowCardPlus extends LitElement {
         sortedIndividualObjects: IndividualObject[];
         individualFieldLeftTop?: IndividualObject;
         individualFieldLeftBottom?: IndividualObject;
-        individualFieldRightTop?: IndividualObject;
-        individualFieldRightBottom?: IndividualObject;
+        rightColumns: RightColumn[];
+        hasBottomRow: boolean;
       }
     | undefined;
 
@@ -293,19 +292,9 @@ export class PowerFlowCardPlus extends LitElement {
       homeUsageToDisplay,
       individualFieldLeftTop,
       individualFieldLeftBottom,
-      individualFieldRightTop,
-      individualFieldRightBottom,
+      rightColumns,
+      hasBottomRow,
     } = data;
-    const getIndividualDisplayState = (field?: IndividualObject) => {
-      if (!field) return "";
-      if (field?.state === undefined) return "";
-      return displayValue(this.hass, this._config, field?.state, {
-        decimals: field?.decimals,
-        unit: field?.unit,
-        unitWhiteSpace: field?.unit_white_space,
-        watt_threshold: this._config.watt_threshold,
-      });
-    };
 
     return html`
       <ha-card
@@ -337,23 +326,26 @@ export class PowerFlowCardPlus extends LitElement {
                     ? html`<div class="spacer"></div>`
                     : nothing}
                 ${individualFieldLeftTop
-                  ? individualLeftTopElement(this, this._config, {
+                  ? renderIndividualElement(this, this._config, {
                       individualObj: individualFieldLeftTop,
-                      displayState: getIndividualDisplayState(individualFieldLeftTop),
+                      position: "left-top",
                       newDur,
                       templatesObj,
+                      hasBottomRow,
                     })
                   : html`<div class="spacer"></div>`}
-                ${checkHasRightIndividual(individualObjs)
-                  ? individualRightTopElement(this, this._config, {
-                      displayState: getIndividualDisplayState(individualFieldRightTop),
-                      individualObj: individualFieldRightTop,
-                      newDur,
-                      templatesObj,
-                      battery,
-                      individualObjs,
-                    })
-                  : nothing}
+                ${rightColumns.map((col, cIdx) =>
+                  col.top
+                    ? renderIndividualElement(this, this._config, {
+                        individualObj: col.top,
+                        position: "right-top",
+                        colIndex: cIdx,
+                        newDur,
+                        templatesObj,
+                        hasBottomRow,
+                      })
+                    : html`<div class="spacer"></div>`
+                )}
               </div>`
             : nothing}
           <div class="row">
@@ -381,28 +373,46 @@ export class PowerFlowCardPlus extends LitElement {
                   individual: individualObjs,
                 })
               : html`<div class="spacer"></div>`}
-            ${checkHasRightIndividual(individualObjs) ? html` <div class="spacer"></div>` : nothing}
+            ${rightColumns.map((col, cIdx) =>
+              col.mid
+                ? renderIndividualElement(this, this._config, {
+                    individualObj: col.mid,
+                    position: "right-mid",
+                    colIndex: cIdx,
+                    newDur,
+                    templatesObj,
+                    hasBottomRow,
+                  })
+                : rightColumns.length > 0
+                  ? html`<div class="spacer"></div>`
+                  : nothing
+            )}
           </div>
           ${battery.has || checkHasBottomIndividual(individualObjs)
             ? html`<div class="row">
                 <div class="spacer"></div>
                 ${battery.has ? batteryElement(this, this._config, { battery, entities }) : html`<div class="spacer"></div>`}
                 ${individualFieldLeftBottom
-                  ? individualLeftBottomElement(this, this._config, {
-                      displayState: getIndividualDisplayState(individualFieldLeftBottom),
+                  ? renderIndividualElement(this, this._config, {
                       individualObj: individualFieldLeftBottom,
+                      position: "left-bottom",
                       newDur,
                       templatesObj,
+                      hasBottomRow,
                     })
                   : html`<div class="spacer"></div>`}
-                ${checkHasRightIndividual(individualObjs)
-                  ? individualRightBottomElement(this, this._config, {
-                      displayState: getIndividualDisplayState(individualFieldRightBottom),
-                      individualObj: individualFieldRightBottom,
-                      newDur,
-                      templatesObj,
-                    })
-                  : nothing}
+                ${rightColumns.map((col, cIdx) =>
+                  col.bottom
+                    ? renderIndividualElement(this, this._config, {
+                        individualObj: col.bottom,
+                        position: "right-bottom",
+                        colIndex: cIdx,
+                        newDur,
+                        templatesObj,
+                        hasBottomRow,
+                      })
+                    : html`<div class="spacer"></div>`
+                )}
               </div>`
             : html`<div class="spacer"></div>`}
           ${flowElement(this._config, {
@@ -772,20 +782,30 @@ export class PowerFlowCardPlus extends LitElement {
       solarSecondary: this._templateResults.solarSecondary?.result,
       homeSecondary: this._templateResults.homeSecondary?.result,
       nonFossilFuelSecondary: this._templateResults.nonFossilFuelSecondary?.result,
-      individual: individualObjs?.map((_, index) => this._templateResults[`${individualKeys[index]}Secondary`]?.result) || [],
+      individual:
+        individualObjs?.map(
+          (_, index) =>
+            this._templateResults[`individualSecondary_${index}`]?.result ||
+            this._templateResults[`${individualKeys[index]}Secondary`]?.result
+        ) || [],
     };
 
     const isCardWideEnough = this._width > 420;
     const sortedIndividualObjects = this._config.sort_individual_devices ? sortIndividualObjects(individualObjs) : individualObjs;
-    const maxVisibleIndividuals = this._config.allow_layout_break ? 4 : this._width >= this.wideEnoughForFourIndividuals ? 4 : 2;
+    const maxVisibleIndividuals = 10;
 
     const filteredNotShownIndividualObjects = sortedIndividualObjects.filter((individual) => individual.has);
     const visibleIndividualObjects = filteredNotShownIndividualObjects.slice(0, maxVisibleIndividuals);
 
     const individualFieldLeftTop = getTopLeftIndividual(visibleIndividualObjects);
     const individualFieldLeftBottom = getBottomLeftIndividual(visibleIndividualObjects);
-    const individualFieldRightTop = getTopRightIndividual(visibleIndividualObjects);
-    const individualFieldRightBottom = getBottomRightIndividual(visibleIndividualObjects);
+    const rightColumns = getRightColumns(visibleIndividualObjects);
+    const hasBottomRow = !!battery.has || checkHasBottomIndividual(visibleIndividualObjects);
+
+    const numRightCols = Math.max(1, rightColumns.length);
+    const totalCols = 3 + numRightCols;
+    const calcMaxWidth = totalCols > 4 ? `${totalCols * 125}px` : "500px";
+    this.style.setProperty("--pfcp-card-max-width", calcMaxWidth);
 
     allDynamicStyles(this, {
       grid,
@@ -818,8 +838,8 @@ export class PowerFlowCardPlus extends LitElement {
       sortedIndividualObjects: visibleIndividualObjects,
       individualFieldLeftTop,
       individualFieldLeftBottom,
-      individualFieldRightTop,
-      individualFieldRightBottom,
+      rightColumns,
+      hasBottomRow,
     };
   }
 
@@ -838,7 +858,12 @@ export class PowerFlowCardPlus extends LitElement {
         if (Array.isArray(value)) {
           const individualKeys = ["left-top", "left-bottom", "right-top", "right-bottom"];
           value.forEach((template, index) => {
-            if (template) this._tryConnect(template, `${individualKeys[index]}Secondary`);
+            if (template) {
+              this._tryConnect(template, `individualSecondary_${index}`);
+              if (individualKeys[index]) {
+                this._tryConnect(template, `${individualKeys[index]}Secondary`);
+              }
+            }
           });
         } else {
           this._tryConnect(value, key);

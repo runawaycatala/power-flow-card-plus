@@ -49,7 +49,7 @@ export type GridPowerOutage = {
 };
 
 export type IndividualDeviceType = BaseConfigEntity & {
-  entity: string;
+  entity?: string;
   color?: string;
   color_icon?: boolean;
   inverted_animation?: boolean;
@@ -61,6 +61,7 @@ export type IndividualDeviceType = BaseConfigEntity & {
   use_metadata?: boolean;
   decimals?: number;
   show_direction?: boolean;
+  children?: IndividualDeviceType[];
 };
 
 export type EntityType = "battery" | "grid" | "solar" | "individual1" | "individual2" | "home" | "fossil_fuel_percentage";
