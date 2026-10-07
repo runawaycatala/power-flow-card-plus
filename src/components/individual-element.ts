@@ -206,7 +206,7 @@ export const renderIndividualElement = (
               vector-effect="non-scaling-stroke"
             />
             ${checkShouldShowDots(config) && individualObj.state && individualObj.state >= (individualObj.displayZeroTolerance ?? 0)
-              ? svg`<circle r="1" class="individual-top" vector-effect="non-scaling-stroke">
+              ? svg`<circle r="1.75" class="individual-top" vector-effect="non-scaling-stroke">
                   <animateMotion
                     dur="${computeIndividualFlowRate(individualObj?.field?.calculate_flow_rate, duration)}s"
                     repeatCount="indefinite"
@@ -214,7 +214,7 @@ export const renderIndividualElement = (
                     keyPoints="${individualObj.invertAnimation ? "0;1" : "1;0"}"
                     keyTimes="0;1"
                   >
-                    <mpath xlink:href="#${pathId}" />
+                    <mpath href="#${pathId}" xlink:href="#${pathId}" />
                   </animateMotion>
                 </circle>`
               : nothing}
@@ -236,7 +236,7 @@ export const renderIndividualElement = (
               vector-effect="non-scaling-stroke"
             />
             ${checkShouldShowDots(config) && individualObj.state && individualObj.state >= (individualObj.displayZeroTolerance ?? 0)
-              ? svg`<circle r="1" class="individual-bottom" vector-effect="non-scaling-stroke">
+              ? svg`<circle r="1.75" class="individual-bottom" vector-effect="non-scaling-stroke">
                   <animateMotion
                     dur="${computeIndividualFlowRate(individualObj?.field?.calculate_flow_rate, duration)}s"
                     repeatCount="indefinite"
@@ -244,7 +244,7 @@ export const renderIndividualElement = (
                     keyPoints="${individualObj.invertAnimation ? "0;1" : "1;0"}"
                     keyTimes="0;1"
                   >
-                    <mpath xlink:href="#${pathId}" />
+                    <mpath href="#${pathId}" xlink:href="#${pathId}" />
                   </animateMotion>
                 </circle>`
               : nothing}
@@ -254,27 +254,26 @@ export const renderIndividualElement = (
     }
 
     if (position === "right-mid") {
-      const extraLeft = colIndex * 80;
       const pathId = `individual-mid-right-home-${colIndex}`;
       return html`
         <div class="right-individual-flow-container col-${colIndex}">
-          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" class="right-individual-flow">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" class="right-individual-flow">
             <path
               id="${pathId}"
               class="${styleLine(individualObj.state || 0, config)}"
-              d="M45,50 H-${5 + extraLeft}"
+              d="M0,50 H100"
               vector-effect="non-scaling-stroke"
             />
             ${checkShouldShowDots(config) && individualObj.state && individualObj.state >= (individualObj.displayZeroTolerance ?? 0)
-              ? svg`<circle r="1" class="individual-mid" vector-effect="non-scaling-stroke">
+              ? svg`<circle r="1.75" class="individual-mid" vector-effect="non-scaling-stroke">
                   <animateMotion
                     dur="${computeIndividualFlowRate(individualObj?.field?.calculate_flow_rate, duration)}s"
                     repeatCount="indefinite"
-                    calcMode="paced"
-                    keyPoints="${individualObj.invertAnimation ? "0;1" : "1;0"}"
-                    keyTimes="0;1"
+                    calcMode="${individualObj.invertAnimation ? "linear" : "paced"}"
+                    keyPoints="${individualObj.invertAnimation ? "1;0" : nothing}"
+                    keyTimes="${individualObj.invertAnimation ? "0;1" : nothing}"
                   >
-                    <mpath xlink:href="#${pathId}" />
+                    <mpath href="#${pathId}" xlink:href="#${pathId}" />
                   </animateMotion>
                 </circle>`
               : nothing}

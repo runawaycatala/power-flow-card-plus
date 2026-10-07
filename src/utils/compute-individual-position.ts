@@ -26,11 +26,7 @@ export const getRightColumns = (individualObjs: IndividualObject[]): RightColumn
   while (i < rightItems.length) {
     const remaining = rightItems.length - i;
     if (remaining === 1) {
-      if (columns.length > 0) {
-        columns[columns.length - 1].mid = rightItems[i];
-      } else {
-        columns.push({ top: rightItems[i] });
-      }
+      columns.push({ mid: rightItems[i] });
       i++;
     } else {
       columns.push({
@@ -63,7 +59,7 @@ export const getBottomRightIndividual = (individualObjs: IndividualObject[]): In
 };
 
 export const getMidRightIndividual = (individualObjs: IndividualObject[]): IndividualObject | undefined => {
-  return getRightColumns(individualObjs)[0]?.mid;
+  return getRightColumns(individualObjs).find((c) => !!c.mid)?.mid;
 };
 
 export const checkHasRightIndividual = (individualObjs: IndividualObject[]): boolean =>

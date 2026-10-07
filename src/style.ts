@@ -376,6 +376,23 @@ export const styles = css`
     max-width: 340px;
     position: relative;
   }
+
+  .right-cols-2 .right-individual-flow-container.col-0 {
+    margin-right: calc((100% - var(--size-circle-entity) - 32px) / 4);
+  }
+  .right-cols-2 .right-individual-flow-container.col-0 .right-individual-flow {
+    width: calc((100% - var(--size-circle-entity) - 32px) / 4);
+    max-width: 340px;
+  }
+
+  .right-cols-2 .right-individual-flow-container.col-1 {
+    margin-right: -1.2%;
+  }
+  .right-cols-2 .right-individual-flow-container.col-1 .right-individual-flow {
+    width: calc(((100% - var(--size-circle-entity) - 32px) / 4) * 2);
+    max-width: 400px;
+  }
+
   .circle-container.individual-right-mid {
     margin-top: -20px;
   }
