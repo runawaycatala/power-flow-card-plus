@@ -60,6 +60,7 @@ export type IndividualObject = {
     displayZero: boolean;
     accept_negative: boolean;
     displayZeroTolerance: number;
+    decimals: number | null;
     tap_action?: ActionConfig;
     hold_action?: ActionConfig;
     double_tap_action?: ActionConfig;

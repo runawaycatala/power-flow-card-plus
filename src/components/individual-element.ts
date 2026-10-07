@@ -90,6 +90,7 @@ export const renderIndividualElement = (
       <div class="child-circle-wrapper">
         ${!isBottom ? html`<span class="label child-label">${child.name}</span>` : nothing}
         <div
+          id="child-circle-${safeIndex}-${cIdx}"
           class="circle child-circle ${disableEntityClick ? "pointer-events-none" : ""}"
           style="border-color: ${childColor};"
           @click=${(e: MouseEvent) => main.onEntityClick(e, child.field, child.entity)}
