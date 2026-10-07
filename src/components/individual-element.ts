@@ -147,17 +147,25 @@ export const renderIndividualElement = (
     `;
   };
 
+  const itemColor = individualObj.color || individualObj.field?.color || "var(--primary-color)";
+  const uniqueId = (individualObj.name || safeIndex).toString().toLowerCase().replace(/[^a-z0-9]/g, "-");
+  const totalCols = 3 + numRightCols;
+  const homeCenterPercent = (2.5 / totalCols) * 100;
+  const colWidthPercent = ((colIndex + 1) / totalCols) * 100;
+  const containerStyle = `left: ${homeCenterPercent}%; width: ${colWidthPercent}%;`;
+
   const renderHomeFlowLine = () => {
     if (!showLine(config, individualObj.state || 0) || config.entities.home?.hide) {
       return nothing;
     }
 
     if (position === "left-top") {
+      const pathId = `flow-lt-${uniqueId}`;
       return html`
         <svg width="80" height="30" class="individual-left-top-svg">
-          <path d="M40 -10 v50" id="individual-top" class="${styleLine(individualObj.state || 0, config)}" />
+          <path d="M40 -10 v50" id="${pathId}" class="${styleLine(individualObj.state || 0, config)}" style="stroke: ${itemColor};" />
           ${checkShouldShowDots(config) && individualObj.state && individualObj.state >= (individualObj.displayZeroTolerance ?? 0)
-            ? svg`<circle r="1.75" class="individual-top" vector-effect="non-scaling-stroke">
+            ? svg`<circle r="1.75" class="individual-top" style="fill: ${itemColor}; stroke: ${itemColor}; stroke-width: 1;" vector-effect="non-scaling-stroke">
                 <animateMotion
                   dur="${computeIndividualFlowRate(individualObj?.field?.calculate_flow_rate, duration)}s"
                   repeatCount="indefinite"
@@ -165,7 +173,7 @@ export const renderIndividualElement = (
                   keyPoints="${individualObj.invertAnimation ? "0;1" : "1;0"}"
                   keyTimes="0;1"
                 >
-                  <mpath xlink:href="#individual-top" />
+                  <mpath xlink:href="#${pathId}" href="#${pathId}" />
                 </animateMotion>
               </circle>`
             : nothing}
@@ -174,11 +182,12 @@ export const renderIndividualElement = (
     }
 
     if (position === "left-bottom") {
+      const pathId = `flow-lb-${uniqueId}`;
       return html`
         <svg width="80" height="30" class="individual-left-bottom-svg">
-          <path d="M40 40 v-40" id="individual-bottom" class="${styleLine(individualObj?.state || 0, config)}" />
+          <path d="M40 40 v-40" id="${pathId}" class="${styleLine(individualObj?.state || 0, config)}" style="stroke: ${itemColor};" />
           ${checkShouldShowDots(config) && individualObj?.state && individualObj.state >= (individualObj.displayZeroTolerance ?? 0)
-            ? svg`<circle r="1.75" class="individual-bottom" vector-effect="non-scaling-stroke">
+            ? svg`<circle r="1.75" class="individual-bottom" style="fill: ${itemColor}; stroke: ${itemColor}; stroke-width: 1;" vector-effect="non-scaling-stroke">
                 <animateMotion
                   dur="${computeIndividualFlowRate(individualObj.field?.calculate_flow_rate !== false, duration)}s"
                   repeatCount="indefinite"
@@ -186,7 +195,7 @@ export const renderIndividualElement = (
                   keyPoints="${individualObj.invertAnimation ? "0;1" : "1;0"}"
                   keyTimes="0;1"
                 >
-                  <mpath xlink:href="#individual-bottom" />
+                  <mpath xlink:href="#${pathId}" href="#${pathId}" />
                 </animateMotion>
               </circle>`
             : nothing}
@@ -195,13 +204,8 @@ export const renderIndividualElement = (
     }
 
     if (position === "right-top") {
-      const isMultiCol = numRightCols > 1;
-      const colWidthPercent = isMultiCol ? ((colIndex + 1) / numRightCols) * 100 : null;
-      const containerStyle = colWidthPercent ? `width: ${colWidthPercent}%;` : "";
-      const pathId = `individual-top-right-home-${colIndex}`;
-      const pathD = isMultiCol
-        ? "M90,0 v15 c0,30 -20,30 -40,30 H0"
-        : `M${hasBottomRow ? 45 : 47},0 v15 c0,${hasBottomRow ? "30 -10,30 -30,30" : "35 -10,35 -30,35"} h-20`;
+      const pathId = `flow-rt-${uniqueId}`;
+      const pathD = "M98,0 v15 c0,25 -20,35 -48,35 H0";
       return html`
         <div class="right-individual-flow-container col-${colIndex}" style="${containerStyle}">
           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" class="right-individual-flow">
@@ -209,10 +213,11 @@ export const renderIndividualElement = (
               id="${pathId}"
               class="${styleLine(individualObj.state || 0, config)}"
               d="${pathD}"
+              style="stroke: ${itemColor};"
               vector-effect="non-scaling-stroke"
             />
             ${checkShouldShowDots(config) && individualObj.state && individualObj.state >= (individualObj.displayZeroTolerance ?? 0)
-              ? svg`<circle r="1.75" class="individual-top" vector-effect="non-scaling-stroke">
+              ? svg`<circle r="1.75" class="individual-top" style="fill: ${itemColor}; stroke: ${itemColor}; stroke-width: 1;" vector-effect="non-scaling-stroke">
                   <animateMotion
                     dur="${computeIndividualFlowRate(individualObj?.field?.calculate_flow_rate, duration)}s"
                     repeatCount="indefinite"
@@ -230,13 +235,8 @@ export const renderIndividualElement = (
     }
 
     if (position === "right-bottom") {
-      const isMultiCol = numRightCols > 1;
-      const colWidthPercent = isMultiCol ? ((colIndex + 1) / numRightCols) * 100 : null;
-      const containerStyle = colWidthPercent ? `width: ${colWidthPercent}%;` : "";
-      const pathId = `individual-bottom-right-home-${colIndex}`;
-      const pathD = isMultiCol
-        ? "M90,100 v-15 c0,-30 -20,-30 -40,-30 H0"
-        : "M45,100 v-15 c0,-30 -10,-30 -30,-30 h-20";
+      const pathId = `flow-rb-${uniqueId}`;
+      const pathD = "M98,100 v-15 c0,-25 -20,-35 -48,-35 H0";
       return html`
         <div class="right-individual-flow-container col-${colIndex}" style="${containerStyle}">
           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" class="right-individual-flow">
@@ -244,10 +244,11 @@ export const renderIndividualElement = (
               id="${pathId}"
               class="${styleLine(individualObj.state || 0, config)}"
               d="${pathD}"
+              style="stroke: ${itemColor};"
               vector-effect="non-scaling-stroke"
             />
             ${checkShouldShowDots(config) && individualObj.state && individualObj.state >= (individualObj.displayZeroTolerance ?? 0)
-              ? svg`<circle r="1.75" class="individual-bottom" vector-effect="non-scaling-stroke">
+              ? svg`<circle r="1.75" class="individual-bottom" style="fill: ${itemColor}; stroke: ${itemColor}; stroke-width: 1;" vector-effect="non-scaling-stroke">
                   <animateMotion
                     dur="${computeIndividualFlowRate(individualObj?.field?.calculate_flow_rate, duration)}s"
                     repeatCount="indefinite"
@@ -265,21 +266,19 @@ export const renderIndividualElement = (
     }
 
     if (position === "right-mid") {
-      const isMultiCol = numRightCols > 1;
-      const colWidthPercent = isMultiCol ? ((colIndex + 1) / numRightCols) * 100 : null;
-      const containerStyle = colWidthPercent ? `width: ${colWidthPercent}%;` : "";
-      const pathId = `individual-mid-right-home-${colIndex}`;
+      const pathId = `flow-rm-${uniqueId}`;
       return html`
         <div class="right-individual-flow-container col-${colIndex}" style="${containerStyle}">
           <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" class="right-individual-flow">
             <path
               id="${pathId}"
               class="${styleLine(individualObj.state || 0, config)}"
-              d="M0,50 H95"
+              d="M0,50 H98"
+              style="stroke: ${itemColor};"
               vector-effect="non-scaling-stroke"
             />
             ${checkShouldShowDots(config) && individualObj.state && individualObj.state >= (individualObj.displayZeroTolerance ?? 0)
-              ? svg`<circle r="2" class="individual-mid" vector-effect="non-scaling-stroke">
+              ? svg`<circle r="2" class="individual-mid" style="fill: ${itemColor}; stroke: ${itemColor}; stroke-width: 1;" vector-effect="non-scaling-stroke">
                   <animateMotion
                     dur="${computeIndividualFlowRate(individualObj?.field?.calculate_flow_rate, duration)}s"
                     repeatCount="indefinite"
@@ -334,6 +333,7 @@ export const renderIndividualElement = (
 
       <div
         class="circle ${disableEntityClick ? "pointer-events-none" : ""}"
+        style="border-color: ${itemColor};"
         @click=${(e: MouseEvent) => main.onEntityClick(e, individualObj?.field, individualObj?.entity)}
         @dblclick=${(e: MouseEvent) => main.onEntityDoubleClick(e, individualObj?.field, individualObj?.entity)}
         @pointerdown=${(e: PointerEvent) => main.onEntityPointerDown(e, individualObj?.field, individualObj?.entity)}
@@ -345,9 +345,9 @@ export const renderIndividualElement = (
       >
         <ha-ripple .disabled=${disableEntityClick}></ha-ripple>
         ${individualSecondarySpan(main.hass, main, config, templatesObj, individualObj, safeIndex, secField)}
-        ${individualObj.icon !== " " ? html`<ha-icon id="individual-${position}-icon" .icon=${individualObj.icon}></ha-icon>` : nothing}
+        ${individualObj.icon !== " " ? html`<ha-icon id="individual-${position}-icon" style="color: ${individualObj.field?.color_icon !== false ? itemColor : 'var(--primary-text-color)'};" .icon=${individualObj.icon}></ha-icon>` : nothing}
         ${individualObj?.field?.display_zero_state !== false || (individualObj.state || 0) > (individualObj.displayZeroTolerance ?? 0)
-          ? html`<span class="${spanClass}">
+          ? html`<span class="${spanClass}" style="color: ${individualObj.field?.color_value ? itemColor : 'var(--primary-text-color)'};">
               ${individualObj?.showDirection
                 ? html`<ha-icon class="small" .icon=${isMid ? (individualObj.invertAnimation ? "mdi:arrow-left" : "mdi:arrow-right") : individualObj.invertAnimation ? (isBottom ? "mdi:arrow-up" : "mdi:arrow-down") : isBottom ? "mdi:arrow-down" : "mdi:arrow-up"}></ha-icon>`
                 : nothing}${displayState}

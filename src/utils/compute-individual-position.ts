@@ -22,6 +22,11 @@ export const getRightColumns = (individualObjs: IndividualObject[]): RightColumn
   const rightItems = items.slice(2);
   const columns: RightColumn[] = [];
 
+  if (rightItems.length === 1) {
+    columns.push({ top: rightItems[0] });
+    return columns;
+  }
+
   let i = 0;
   while (i < rightItems.length) {
     const remaining = rightItems.length - i;

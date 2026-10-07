@@ -296,6 +296,7 @@ export class PowerFlowCardPlus extends LitElement {
       hasBottomRow,
     } = data;
 
+    const totalCols = 3 + (rightColumns.length || 1);
     return html`
       <ha-card
         .header=${this._config.title}
@@ -303,9 +304,9 @@ export class PowerFlowCardPlus extends LitElement {
         style=${this._config.style_ha_card ? this._config.style_ha_card : ""}
       >
         <div
-          class="card-content ${this._config.full_size ? "full-size" : ""} ${this._config.no_labels ? "no-labels" : ""} right-cols-${rightColumns.length}"
+          class="card-content ${this._config.full_size ? "full-size" : ""} ${this._config.no_labels ? "no-labels" : ""} has-right-cols right-cols-${rightColumns.length}"
           id="power-flow-card-plus"
-          style=${this._config.style_card_content ? this._config.style_card_content : ""}
+          style="--total-cols: ${totalCols}; ${this._config.style_card_content ? this._config.style_card_content : ""}"
         >
           ${solar.has || individualObjs?.some((individual) => individual?.has) || nonFossil.hasPercentage
             ? html`<div class="row">
@@ -385,9 +386,7 @@ export class PowerFlowCardPlus extends LitElement {
                     templatesObj,
                     hasBottomRow,
                   })
-                : rightColumns.length > 0
-                  ? html`<div class="spacer"></div>`
-                  : nothing
+                : html`<div class="spacer"></div>`
             )}
           </div>
           ${battery.has || checkHasBottomIndividual(individualObjs)

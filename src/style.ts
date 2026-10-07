@@ -74,8 +74,8 @@ export const styles = css`
   }
 
   .circle {
-    width: 80px;
-    height: 80px;
+    width: var(--size-circle-entity, 80px);
+    height: var(--size-circle-entity, 80px);
     border-radius: 50%;
     box-sizing: border-box;
     border: 2px solid;
@@ -377,31 +377,57 @@ export const styles = css`
     position: relative;
   }
 
-  .right-cols-2 .right-individual-flow-container,
-  .right-cols-3 .right-individual-flow-container,
-  .right-cols-4 .right-individual-flow-container,
-  .right-cols-5 .right-individual-flow-container {
-    left: 50%;
+  .card-content.has-right-cols {
+    --total-cols: 4;
+    --size-circle-entity: min(80px, calc((100% - 16px) / var(--total-cols) - 4px));
+  }
+
+  .card-content.has-right-cols .row {
+    display: grid;
+    grid-template-columns: repeat(var(--total-cols, 4), 1fr);
+    justify-items: center;
+    align-items: center;
+    width: 100%;
+    max-width: var(--pfcp-card-max-width, 500px);
+    margin: 0 auto;
+  }
+
+  .card-content.has-right-cols .row .spacer {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .card-content.has-right-cols .circle {
+    width: var(--size-circle-entity, 80px);
+    height: var(--size-circle-entity, 80px);
+    font-size: min(12px, calc(var(--size-circle-entity) * 0.18));
+  }
+
+  .card-content.has-right-cols ha-icon:not(.small) {
+    --mdc-icon-size: min(24px, calc(var(--size-circle-entity) * 0.38));
+  }
+
+  .card-content.has-right-cols .label {
+    max-width: var(--size-circle-entity, 80px);
+    font-size: min(12px, calc(var(--size-circle-entity) * 0.17));
+  }
+
+  .card-content.has-right-cols .circle-container.individual-right-mid {
+    margin-top: 0;
+  }
+
+  .card-content.has-right-cols .right-individual-flow-container {
     right: auto;
-    width: 50%;
     display: flex;
     justify-content: flex-start;
     padding: 0;
     margin: 0;
   }
-  .right-cols-2 .right-individual-flow-container .right-individual-flow,
-  .right-cols-3 .right-individual-flow-container .right-individual-flow,
-  .right-cols-4 .right-individual-flow-container .right-individual-flow,
-  .right-cols-5 .right-individual-flow-container .right-individual-flow {
-    width: 100%;
-    max-width: none;
-  }
 
-  .circle-container.individual-right-mid {
-    margin-top: -20px;
-  }
-  .card-content.no-labels .circle-container.individual-right-mid {
-    margin-top: 0;
+  .card-content.has-right-cols .right-individual-flow-container .right-individual-flow {
+    width: 100%;
+    height: 100%;
+    max-width: none;
   }
   .individual-right-mid .circle {
     border-color: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
