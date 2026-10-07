@@ -328,7 +328,7 @@ export const renderIndividualElement = (
 
   const circleContent = html`
     <div class="${containerClasses}">
-      ${!isBottom ? html`<span class="label">${individualObj.name}</span>` : nothing}
+      ${isTop ? html`<span class="label">${individualObj.name}</span>` : nothing}
       ${position === "left-bottom" ? renderHomeFlowLine() : nothing}
 
       <div
@@ -355,7 +355,7 @@ export const renderIndividualElement = (
           : nothing}
       </div>
 
-      ${isBottom ? html`<span class="label">${individualObj.name}</span>` : nothing}
+      ${isBottom || isMid ? html`<span class="label">${individualObj.name}</span>` : nothing}
       ${position !== "left-bottom" ? renderHomeFlowLine() : nothing}
     </div>
   `;
