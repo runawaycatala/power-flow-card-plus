@@ -257,12 +257,12 @@ export const renderIndividualElement = (
       const extraLeft = colIndex * 80;
       const pathId = `individual-mid-right-home-${colIndex}`;
       return html`
-        <div class="right-individual-flow-container mid col-${colIndex}">
-          <svg viewBox="0 0 100 20" preserveAspectRatio="none" class="right-individual-flow mid">
+        <div class="right-individual-flow-container col-${colIndex}">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" class="right-individual-flow">
             <path
               id="${pathId}"
               class="${styleLine(individualObj.state || 0, config)}"
-              d="M0,10 h${100 + extraLeft}"
+              d="M45,50 H-${5 + extraLeft}"
               vector-effect="non-scaling-stroke"
             />
             ${checkShouldShowDots(config) && individualObj.state && individualObj.state >= (individualObj.displayZeroTolerance ?? 0)
@@ -289,7 +289,7 @@ export const renderIndividualElement = (
   const containerClasses = [
     "circle-container",
     isTop ? "individual-top" : "",
-    isBottom ? "individual-bottom bottom" : "",
+    position === "left-bottom" ? "individual-bottom bottom" : isBottom ? "individual-bottom" : "",
     isMid ? "individual-middle" : "",
     position.startsWith("right") ? "individual-right" : "",
     position === "right-top" ? "individual-right-top" : "",
@@ -314,41 +314,47 @@ export const renderIndividualElement = (
 
   const secField = position === "left-top" ? "left-top" : position === "left-bottom" ? "left-bottom" : position === "right-top" ? "right-top" : "right-bottom";
 
+  const circleContent = html`
+    <div class="${containerClasses}">
+      ${!isBottom ? html`<span class="label">${individualObj.name}</span>` : nothing}
+      ${position === "left-bottom" ? renderHomeFlowLine() : nothing}
+
+      <div
+        class="circle ${disableEntityClick ? "pointer-events-none" : ""}"
+        @click=${(e: MouseEvent) => main.onEntityClick(e, individualObj?.field, individualObj?.entity)}
+        @dblclick=${(e: MouseEvent) => main.onEntityDoubleClick(e, individualObj?.field, individualObj?.entity)}
+        @pointerdown=${(e: PointerEvent) => main.onEntityPointerDown(e, individualObj?.field, individualObj?.entity)}
+        @pointerup=${(e: PointerEvent) => main.onEntityPointerUp(e)}
+        @pointercancel=${(e: PointerEvent) => main.onEntityPointerUp(e)}
+        @keyDown=${(e: { key: string; stopPropagation: () => void; target: HTMLElement }) => {
+          if (e.key === "Enter") main.openDetails(e, individualObj?.field, individualObj?.entity, "tap");
+        }}
+      >
+        <ha-ripple .disabled=${disableEntityClick}></ha-ripple>
+        ${individualSecondarySpan(main.hass, main, config, templatesObj, individualObj, safeIndex, secField)}
+        ${individualObj.icon !== " " ? html`<ha-icon id="individual-${position}-icon" .icon=${individualObj.icon}></ha-icon>` : nothing}
+        ${individualObj?.field?.display_zero_state !== false || (individualObj.state || 0) > (individualObj.displayZeroTolerance ?? 0)
+          ? html`<span class="${spanClass}">
+              ${individualObj?.showDirection
+                ? html`<ha-icon class="small" .icon=${isMid ? (individualObj.invertAnimation ? "mdi:arrow-left" : "mdi:arrow-right") : individualObj.invertAnimation ? (isBottom ? "mdi:arrow-up" : "mdi:arrow-down") : isBottom ? "mdi:arrow-down" : "mdi:arrow-up"}></ha-icon>`
+                : nothing}${displayState}
+            </span>`
+          : nothing}
+      </div>
+
+      ${isBottom ? html`<span class="label">${individualObj.name}</span>` : nothing}
+      ${position !== "left-bottom" ? renderHomeFlowLine() : nothing}
+    </div>
+  `;
+
+  if (!hasChildren) {
+    return circleContent;
+  }
+
   return html`
     <div class="individual-branch ${isBottom ? "branch-bottom" : "branch-top"} ${isMid ? "branch-mid" : ""}">
       ${!isBottom ? renderChildrenBlock() : nothing}
-
-      <div class="${containerClasses}">
-        ${!isBottom ? html`<span class="label">${individualObj.name}</span>` : nothing}
-        ${position === "left-bottom" ? renderHomeFlowLine() : nothing}
-
-        <div
-          class="circle ${disableEntityClick ? "pointer-events-none" : ""}"
-          @click=${(e: MouseEvent) => main.onEntityClick(e, individualObj?.field, individualObj?.entity)}
-          @dblclick=${(e: MouseEvent) => main.onEntityDoubleClick(e, individualObj?.field, individualObj?.entity)}
-          @pointerdown=${(e: PointerEvent) => main.onEntityPointerDown(e, individualObj?.field, individualObj?.entity)}
-          @pointerup=${(e: PointerEvent) => main.onEntityPointerUp(e)}
-          @pointercancel=${(e: PointerEvent) => main.onEntityPointerUp(e)}
-          @keyDown=${(e: { key: string; stopPropagation: () => void; target: HTMLElement }) => {
-            if (e.key === "Enter") main.openDetails(e, individualObj?.field, individualObj?.entity, "tap");
-          }}
-        >
-          <ha-ripple .disabled=${disableEntityClick}></ha-ripple>
-          ${individualSecondarySpan(main.hass, main, config, templatesObj, individualObj, safeIndex, secField)}
-          ${individualObj.icon !== " " ? html`<ha-icon id="individual-icon-${safeIndex}" .icon=${individualObj.icon}></ha-icon>` : nothing}
-          ${individualObj?.field?.display_zero_state !== false || (individualObj.state || 0) > (individualObj.displayZeroTolerance ?? 0)
-            ? html`<span class="${spanClass}">
-                ${individualObj?.showDirection
-                  ? html`<ha-icon class="small" .icon=${individualObj.invertAnimation ? (isBottom ? "mdi:arrow-up" : "mdi:arrow-down") : isBottom ? "mdi:arrow-down" : "mdi:arrow-up"}></ha-icon>`
-                  : nothing}${displayState}
-              </span>`
-            : nothing}
-        </div>
-
-        ${isBottom ? html`<span class="label">${individualObj.name}</span>` : nothing}
-        ${position !== "left-bottom" ? renderHomeFlowLine() : nothing}
-      </div>
-
+      ${circleContent}
       ${isBottom ? renderChildrenBlock() : nothing}
     </div>
   `;

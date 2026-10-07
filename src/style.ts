@@ -329,6 +329,7 @@ export const styles = css`
   .individual-right-top path,
   .individual-right-top circle {
     stroke: var(--individual-right-top-color);
+    fill: var(--individual-right-top-color);
   }
   .individual-right-bottom .circle {
     border-color: var(--individual-right-bottom-color);
@@ -341,6 +342,7 @@ export const styles = css`
   .individual-right-bottom path,
   .individual-right-bottom circle {
     stroke: var(--individual-right-bottom-color);
+    fill: var(--individual-right-bottom-color);
   }
 
   .right-individual-flow-container {
@@ -368,14 +370,11 @@ export const styles = css`
     max-width: 340px;
     position: relative;
   }
-  .right-individual-flow-container.mid {
-    bottom: unset;
-    top: calc(50% - 10px);
-    height: 20px;
+  .circle-container.individual-right-mid {
+    margin-top: -20px;
   }
-  .right-individual-flow.mid {
-    height: 20px;
-    top: 0;
+  .card-content.no-labels .circle-container.individual-right-mid {
+    margin-top: 0;
   }
   .individual-right-mid .circle {
     border-color: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
@@ -383,10 +382,18 @@ export const styles = css`
   .individual-right-mid path,
   .individual-right-mid circle {
     stroke: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
+    fill: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
+  }
+  .individual-right-mid ha-icon {
+    color: var(--icon-individual-right-mid-color, var(--individual-right-mid-color, #ff9800));
+  }
+  .individual-right-mid span.individual-right-mid {
+    color: var(--text-individual-right-mid-color, var(--individual-right-mid-color, #ff9800));
   }
   circle.individual-mid {
     stroke-width: 4;
     fill: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
+    stroke: var(--individual-right-mid-color, var(--individual-4-color, #ff9800));
   }
 
   /* Branch & Children styling */
@@ -394,7 +401,6 @@ export const styles = css`
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative;
   }
   .individual-branch.branch-top {
     justify-content: flex-end;
